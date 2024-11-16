@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Meta information and title -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bio Generator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* Resetting default styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        /* General page styles */
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(to right, #8e2de2, #4a00e0, #ff5f6d, #ffc3a0);
@@ -23,11 +26,12 @@
             padding: 20px;
         }
 
+        /* Heading styles */
         h1 {
             color: #F0EAD6;
         }
 
-
+        /* Container for form and output */
         .container {
             margin-top: 30px;
             background: #ffffff;
@@ -50,6 +54,7 @@
             margin-top: 0;
         }
 
+        /* Label for input fields */
         label {
             font-weight: bold;
             font-size: larger;
@@ -57,6 +62,7 @@
             margin: 10px 0 5px;
         }
 
+        /* Options container styling */
         .options {
             display: flex;
             flex-wrap: wrap;
@@ -64,6 +70,7 @@
             justify-content: center;
         }
 
+        /* Individual option styles */
         .option {
             padding: 8px 12px;
             background-color: #e4e4e4;
@@ -76,42 +83,41 @@
             font-style: italic;
         }
 
+        /* Selected option styles */
         .option.selected {
             background-color: #ff5f6d;
             color: white;
         }
 
-        .option span {
-            margin-left: 5px;
-        }
-
+        /* Button container styling */
         .btns {
             width: 100%;
             align-items: center;
         }
 
+        /* Button styling */
         button {
-        margin-top: 30px;
-        outline: none;
-        border: none;
-        border-radius: 15px;
-        cursor: pointer;
-        font-size: 18px; /* Smaller font size */
-        font-weight: 400;
-        color: #fff;
-        background-color: #015353;
-        padding: 8px 14px; /* Smaller padding */
-        margin: 10px;
-        letter-spacing: 2px;
-        text-transform: capitalize;
-        
-        transition: background-color 0.3s;
-    }
+            margin-top: 30px;
+            outline: none;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 400;
+            color: #fff;
+            background-color: #015353;
+            padding: 8px 14px;
+            margin: 10px;
+            letter-spacing: 2px;
+            text-transform: capitalize;
+            transition: background-color 0.3s;
+        }
 
-    button:hover {
-        background-color: #038585;
-    }
+        button:hover {
+            background-color: #038585;
+        }
 
+        /* Output bio styling */
         .output {
             margin-top: 20px;
             background: #f9f9f9;
@@ -122,12 +128,14 @@
             display: none;
         }
 
+        /* Loading spinner styles */
         .loading {
             display: none;
             text-align: center;
             margin-top: 20px;
         }
 
+        /* Spinner animation */
         .spinner {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #ff5f6d;
@@ -137,6 +145,7 @@
             animation: spin 1s linear infinite;
         }
 
+        /* Spinner animation keyframes */
         @keyframes spin {
             0% {
                 transform: rotate(0deg);
@@ -146,7 +155,7 @@
             }
         }
 
-        /* Responsiveness */
+        /* Responsiveness for tablet and mobile devices */
         @media (max-width: 768px) {
             .container {
                 width: 100%;
@@ -172,6 +181,7 @@
             }
         }
 
+        /* Additional responsiveness for mobile devices */
         @media (max-width: 480px) {
             .container h1 {
                 font-size: 1.2em;
@@ -191,9 +201,13 @@
     </style>
 </head>
 <body>
+    <!-- Page header -->
     <h1>Generate Your Bio</h1>
+
+    <!-- Main form container -->
     <div class="container">
         <form id="bioForm">
+            <!-- Career selection -->
             <label for="career">Career:</label>
             <div class="options" id="careerOptions">
                 <span class="option"><span>👨‍💻</span> Engineer</span>
@@ -202,6 +216,7 @@
                 <span class="option"><span>👩‍🏫</span> Teacher</span>
             </div>
             
+            <!-- Personality selection -->
             <label for="personality">Personality Traits:</label>
             <div class="options" id="personalityOptions">
                 <span class="option"><span>🎨</span> Creative</span>
@@ -210,6 +225,7 @@
                 <span class="option"><span>😊</span> Friendly</span>
             </div>
 
+            <!-- Interests selection -->
             <label for="interests">Interests:</label>
             <div class="options" id="interestsOptions">
                 <span class="option"><span>✈️</span> Traveling</span>
@@ -218,6 +234,7 @@
                 <span class="option"><span>⚽</span> Sports</span>
             </div>
 
+            <!-- Relationship goals selection -->
             <label for="relationship_goals">Relationship Goals:</label>
             <div class="options" id="relationshipGoalsOptions">
                 <span class="option"><span>💍</span> Long-term Commitment</span>
@@ -225,14 +242,17 @@
                 <span class="option"><span>❤️</span> Casual Dating</span>
             </div>
 
+            <!-- Button to generate bio -->
             <button type="button" class="btns" id="generateBtn">Generate Bio</button>
         </form>
 
+        <!-- Loading spinner -->
         <div class="loading" id="loading">
             <div class="spinner"></div>
             <p>Generating your bio...</p>
         </div>
 
+        <!-- Output bio -->
         <div class="output" id="bioOutput">
             <h3>Your Bio:</h3>
             <p id="bioText"></p>
@@ -240,17 +260,20 @@
     </div>
 
     <script>
+        // Function to get selected options from a container
         function getSelectedOptions(containerId) {
             return Array.from(document.querySelectorAll(`#${containerId} .option.selected`))
                 .map(option => option.textContent.trim());
         }
 
+        // Toggle selection of options when clicked
         document.querySelectorAll('.option').forEach(option => {
             option.addEventListener('click', () => {
                 option.classList.toggle('selected');
             });
         });
 
+        // Event listener for generating the bio
         document.getElementById('generateBtn').addEventListener('click', () => {
             const career = getSelectedOptions('careerOptions');
             const personality = getSelectedOptions('personalityOptions');
@@ -265,31 +288,20 @@
             loading.style.display = 'block';
             output.style.display = 'none';
 
+            // Send request to the server to generate bio
             fetch('/generate_bio', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ career, personality, interests, relationship_goals: relationshipGoals })
+                body: JSON.stringify({ career, personality, interests, relationshipGoals })
             })
-                .then(response => response.json())
-                .then(data => {
-                    // Hide loading spinner
-                    loading.style.display = 'none';
-
-                    // Display bio with typing effect
-                    typeBio(data.bio);
-                    output.style.display = 'block';
-                })
-                .catch(error => {
-                    // Hide loading spinner
-                    loading.style.display = 'none';
-                    
-                    // Display error message
-                    bioText.textContent = 'Error generating bio. Please try again.';
-                    output.style.display = 'block';
-                    console.error('Error:', error);
-                });
+            .then(response => response.json())
+            .then(data => {
+                // Display the generated bio
+                loading.style.display = 'none';
+                output.style.display = 'block';
+                bioText.textContent = data.bio;
+            });
         });
     </script>
-
 </body>
 </html>
