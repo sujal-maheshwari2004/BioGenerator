@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bio Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #8e2de2, #4a00e0, #ff5f6d, #ffc3a0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #F0EAD6;
+        }
+
+
+        .container {
+            margin-top: 30px;
+            background: #ffffff;
+            padding: 20px 30px;
+            border-radius: 7%;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            width: 500px;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .container h1 {
+            margin-bottom: 20px;
+            color: white;
+            background-color: #ff5f6d;
+            padding: 10px;
+            font-size: 1.8em;
+            border-radius: 7%;
+            margin-top: 0;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: larger;
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .option {
+            padding: 8px 12px;
+            background-color: #e4e4e4;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 0.9em;
+            border: solid 1px;
+            font-style: italic;
+        }
+
+        .option.selected {
+            background-color: #ff5f6d;
+            color: white;
+        }
+
+        .option span {
+            margin-left: 5px;
+        }
+
+        .btns {
+            width: 100%;
+            align-items: center;
+        }
+
+        button {
+        margin-top: 30px;
+        outline: none;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 18px; /* Smaller font size */
+        font-weight: 400;
+        color: #fff;
+        background-color: #015353;
+        padding: 8px 14px; /* Smaller padding */
+        margin: 10px;
+        letter-spacing: 2px;
+        text-transform: capitalize;
+        
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #038585;
+    }
+
+        .output {
+            margin-top: 20px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 7%;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff5f6d;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .container h1 {
+                font-size: 1.5em;
+            }
+
+            .option {
+                padding: 6px 10px;
+                font-size: 0.8em;
+            }
+
+            button {
+                font-size: 20px;
+                padding: 8px 14px;
+            }
+
+            .btns {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container h1 {
+                font-size: 1.2em;
+            }
+
+            button {
+                font-size: 18px;
+                padding: 12px 14px;
+            }
+
+            .output {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Generate Your Bio</h1>
+    <div class="container">
+        <form id="bioForm">
+            <label for="career">Career:</label>
+            <div class="options" id="careerOptions">
+                <span class="option"><span>👨‍💻</span> Engineer</span>
+                <span class="option"><span>👩‍⚕️</span> Doctor</span>
+                <span class="option"><span>🎨</span> Artist</span>
+                <span class="option"><span>👩‍🏫</span> Teacher</span>
+            </div>
+            
+            <label for="personality">Personality Traits:</label>
+            <div class="options" id="personalityOptions">
+                <span class="option"><span>🎨</span> Creative</span>
+                <span class="option"><span>💖</span> Empathetic</span>
+                <span class="option"><span>🚀</span> Ambitious</span>
+                <span class="option"><span>😊</span> Friendly</span>
+            </div>
+
+            <label for="interests">Interests:</label>
+            <div class="options" id="interestsOptions">
+                <span class="option"><span>✈️</span> Traveling</span>
+                <span class="option"><span>🍳</span> Cooking</span>
+                <span class="option"><span>📖</span> Reading</span>
+                <span class="option"><span>⚽</span> Sports</span>
+            </div>
+
+            <label for="relationship_goals">Relationship Goals:</label>
+            <div class="options" id="relationshipGoalsOptions">
+                <span class="option"><span>💍</span> Long-term Commitment</span>
+                <span class="option"><span>👫</span> Friendship</span>
+                <span class="option"><span>❤️</span> Casual Dating</span>
+            </div>
+
+            <button type="button" class="btns" id="generateBtn">Generate Bio</button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Generating your bio...</p>
+        </div>
+
+        <div class="output" id="bioOutput">
+            <h3>Your Bio:</h3>
+            <p id="bioText"></p>
+        </div>
+    </div>
+
+    <script>
+        function getSelectedOptions(containerId) {
+            return Array.from(document.querySelectorAll(`#${containerId} .option.selected`))
+                .map(option => option.textContent.trim());
+        }
+
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', () => {
+                option.classList.toggle('selected');
+            });
+        });
+
+        document.getElementById('generateBtn').addEventListener('click', () => {
+            const career = getSelectedOptions('careerOptions');
+            const personality = getSelectedOptions('personalityOptions');
+            const interests = getSelectedOptions('interestsOptions');
+            const relationshipGoals = getSelectedOptions('relationshipGoalsOptions');
+
+            const loading = document.getElementById('loading');
+            const output = document.getElementById('bioOutput');
+            const bioText = document.getElementById('bioText');
+
+            // Show loading spinner
+            loading.style.display = 'block';
+            output.style.display = 'none';
+
+            fetch('/generate_bio', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ career, personality, interests, relationship_goals: relationshipGoals })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Hide loading spinner
+                    loading.style.display = 'none';
+
+                    // Display bio with typing effect
+                    typeBio(data.bio);
+                    output.style.display = 'block';
+                })
+                .catch(error => {
+                    // Hide loading spinner
+                    loading.style.display = 'none';
+                    
+                    // Display error message
+                    bioText.textContent = 'Error generating bio. Please try again.';
+                    output.style.display = 'block';
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+
+</body>
+</html>
