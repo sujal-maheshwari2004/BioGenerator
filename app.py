@@ -5,16 +5,30 @@ app = Flask(__name__)
 
 # Initialize Ollama LLM
 llm = ChatOllama(
-    model="llama3.2",  # Ensure the correct model version is used
-    temperature=0.7,   # Adjust creativity level
+    model="llama3.2",  
+    temperature=0.7,
 )
 
 @app.route('/')
 def home():
+    """
+    Renders the home page.
+    This route serves the main webpage where users can input data for bio generation.
+    """
     return render_template('index.html')
 
 @app.route('/generate_bio', methods=['POST'])
 def generate_bio():
+    """
+    Generates a personalized bio based on the input data from the user.
+    
+    Steps:
+    1. Receives JSON input from the user.
+    2. Validates the input to ensure all required fields are provided and non-empty.
+    3. Prepares a structured prompt using predefined bio samples and the user's input.
+    4. Passes the prompt to the Ollama LLM to generate a personalized bio.
+    5. Returns the generated bio as a JSON response.
+    """
     # Capture incoming JSON data
     data = request.json
     
@@ -53,7 +67,7 @@ def generate_bio():
     prompt = (
         "\n".join(bio_samples) + "\n\n" +  # Ensure there's a newline for clarity
         f"User's input: {user_input}\n" + 
-        "Please generate a bio no longer than 150 words."
+        "Please generate a bio no longer than 50 words."
     )
     
     # Generate the bio using Ollama
