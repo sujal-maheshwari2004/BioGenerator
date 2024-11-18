@@ -16,8 +16,8 @@ app = Flask(__name__)
 
 # Initialize OpenAI LLM
 llm = ChatOpenAI(
-    model="gpt-4",  # Specify the desired GPT model
-    openai_api_key=OPENAI_API_KEY  # Use API key from .env
+    model="gpt-4",
+    openai_api_key=OPENAI_API_KEY
 )
 
 @app.route('/')
@@ -55,7 +55,7 @@ def generate_bio():
         "Please generate a bio no longer than 50 words."
     )
 
-    # Generate bio using OpenAI GPT
+    # Generate bio using LLM
     try:
         response = llm.invoke([{
             "role": "system",
