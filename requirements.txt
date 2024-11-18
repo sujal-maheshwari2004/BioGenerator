@@ -1,4 +1,4 @@
 Flask
 langchain-openai
 gunicorn
-dotenv
+python-dotenv
