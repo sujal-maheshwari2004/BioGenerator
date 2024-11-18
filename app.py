@@ -1,51 +1,36 @@
 from flask import Flask, render_template, request, jsonify
-from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
+from dotenv import load_dotenv
+import os
 
+# Load environment variables from .env file
+load_dotenv()
+
+# Get OpenAI API key from .env
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise ValueError("Missing OPENAI_API_KEY in .env file")
+
+# Initialize Flask app
 app = Flask(__name__)
 
-# Initialize Ollama LLM
-llm = ChatOllama(
-    model="llama3.2",  
-    temperature=0.7,
+# Initialize OpenAI LLM
+llm = ChatOpenAI(
+    model="gpt-4",  # Specify the desired GPT model
+    openai_api_key=OPENAI_API_KEY  # Use API key from .env
 )
 
 @app.route('/')
 def home():
-    """
-    Renders the home page.
-    This route serves the main webpage where users can input data for bio generation.
-    """
     return render_template('index.html')
 
 @app.route('/generate_bio', methods=['POST'])
 def generate_bio():
-    """
-    Generates a personalized bio based on the input data from the user.
-    
-    Steps:
-    1. Receives JSON input from the user.
-    2. Validates the input to ensure all required fields are provided and non-empty.
-    3. Prepares a structured prompt using predefined bio samples and the user's input.
-    4. Passes the prompt to the Ollama LLM to generate a personalized bio.
-    5. Returns the generated bio as a JSON response.
-    """
-    # Capture incoming JSON data
     data = request.json
-    
-    # Check if the necessary fields are present in the input
-    required_fields = ['career', 'personality', 'interests', 'relationship_goals']
-    if not all(field in data for field in required_fields):
-        return jsonify({"error": "Missing required fields in the input data"}), 400
-    
-    # Extract values from the incoming data
     career = data.get('career', [])
     personality = data.get('personality', [])
     interests = data.get('interests', [])
     relationship_goals = data.get('relationship_goals', [])
-    
-    # Validate if the input lists are non-empty
-    if not any([career, personality, interests, relationship_goals]):
-        return jsonify({"error": "At least one of the input fields is empty"}), 400
 
     # Bio Samples for N-shot prompting
     bio_samples = [
@@ -55,43 +40,36 @@ def generate_bio():
         "The Compassionate Musician: Soulful musician with a heart for social justice and a love for live music. Looking for a kind and compassionate partner who enjoys jamming out at concerts and making a difference in the world.",
         "The Tech-Savvy Gamer: Software engineer by day, gamer by night. I'm equally comfortable debugging code and exploring virtual worlds. Seeking a partner who can appreciate my geeky side and isn't afraid to challenge me to a board game showdown."
     ]
-    
-    # Combine inputs into a well-structured prompt
+
+    # Combine inputs into a formatted prompt
     user_input = (
-        f"Create a personalized bio for a person who is a {', '.join(career)}, "
-        f"with the following personality traits: {', '.join(personality)}, "
-        f"interests in {', '.join(interests)}, and relationship goals of {', '.join(relationship_goals)}."
+        f"Create a personalized bio for someone who is a {', '.join(career)}, "
+        f"with personality traits like {', '.join(personality)}, "
+        f"interests in {', '.join(interests)}, and goals like {', '.join(relationship_goals)}."
     )
-    
-    # Format the final prompt with N-shot examples and the user's input
+
+    # Generate the prompt with N-shot examples and the word limit instruction
     prompt = (
-        "\n".join(bio_samples) + "\n\n" +  # Ensure there's a newline for clarity
-        f"User's input: {user_input}\n" + 
+        "\n".join(bio_samples) + "\n" +
+        "User's input: " + user_input + "\n" +
         "Please generate a bio no longer than 50 words."
     )
-    
-    # Generate the bio using Ollama
+
+    # Generate bio using OpenAI GPT
     try:
-        response = llm.invoke([ 
-            ("system", "You are a helpful assistant that creates engaging bios based on user input, using the following examples for reference."),
-            ("human", prompt)
-        ])
-        
-        # Check if the response content is valid
-        if not response.content.strip():
-            raise ValueError("Generated bio is empty.")
-        
+        response = llm.invoke([{
+            "role": "system",
+            "content": "You are a helpful assistant that creates engaging bios based on user input, using the following examples for reference."
+        }, {
+            "role": "user",
+            "content": prompt
+        }])
         bio = response.content.strip()
-        
-        # Return the generated bio as a JSON response
-        return jsonify({"bio": bio})
-    
     except Exception as e:
-        # Log error message for debugging purposes
-        print(f"Error generating bio: {str(e)}")
-        
-        # Return a user-friendly error message
-        return jsonify({"error": f"Error generating bio: {str(e)}"}), 500
+        bio = f"Error generating bio: {str(e)}"
+
+    return jsonify({"bio": bio})
+
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
